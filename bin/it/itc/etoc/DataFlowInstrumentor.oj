@@ -1,0 +1,100 @@
+/**
+ * @(#) DataFlowInstrumentor.o	v. 1.0 - October 15, 2004
+ *
+ * This software was written by Paolo Tonella (tonella@itc.it) at ITC-irst,
+ * Centro per la Ricerca Scientifica e Tecnlogica.
+ *
+ * Distributed under the Gnu GPL (General Public License). See GPL.TXT
+ */
+
+
+package it.itc.etoc;
+import openjava.mop.*;
+import openjava.ptree.*;
+import java.io.*;
+
+/**
+ * Adds trace instructions to an input Java program.
+ *
+ * <p>
+ * This class exploits the OpenJava compiler to instrument the branches of
+ * a Java program. 
+ *
+ * <p>
+ * The CLASSPATH must point to the location of the OpenJava classes:
+ * <pre>
+ * setenv CLASSPATH <OPENJAVA-DIR>/classes:${CLASSPATH}
+ * </pre>
+ */
+public class DataFlowInstrumentor instantiates Metaclass 
+ extends BranchInstrumentor {
+
+   java.util.Set fields = new java.util.HashSet();
+   java.util.Set def = new java.util.HashSet();
+   java.util.Set use = new java.util.HashSet();
+   
+   
+  public void printDataDependences() {
+    targetFile.println();
+    java.util.Iterator d = def.iterator();
+    while (d.hasNext()) {
+      DataFlowPair dp = (DataFlowPair)d.next();
+      int defBranch = dp.branch;
+      String defVar = dp.var;
+      java.util.Iterator u = use.iterator();
+      while (u.hasNext()) {
+	DataFlowPair up = (DataFlowPair)u.next();
+	int useBranch = up.branch;
+	String useVar = up.var;
+	if (defVar.equals(useVar))
+	  targetFile.println("(" + defBranch + ", " + useBranch + 
+			     ", " + getClassName() + 
+			     "." + defVar + ")");
+      }
+    }
+  }
+
+  public void addDef(int branch, String var) {
+    def.add(new DataFlowPair(branch, var));
+  }
+
+  public void addUse(int branch, String var) {
+    use.add(new DataFlowPair(branch, var));
+  }
+
+  /**
+   * true if var is a class field
+   */
+  public boolean isField(String var) {
+    return fields.contains(var);
+  }
+
+  /**
+   * Overrides default type for trace attribute (from Set to
+   * List). 
+   */
+  public void translateDefinition() throws MOPException {
+    traceInterfaceType = "java.util.List";
+    traceConcreteType = "java.util.LinkedList";
+    OJField[] flds = getAllFields();
+    for (int i = 0 ; i < flds.length ; i++) 
+      fields.add(flds[i].getName());
+    super.translateDefinition();
+    printDataDependences();
+  }
+
+  /**
+   * Initiates the visit of the parse tree from the whole method body.
+   */
+  public void insertBranchTraces(StatementList block) {
+    try {
+      block.accept(new DataFlowVisitor(this));
+      super.insertBranchTraces(block);
+    } catch (ParseTreeException e) {
+      System.err.println(e);
+      System.exit(1);
+    }
+  }
+}
+
+

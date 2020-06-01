@@ -1,0 +1,3 @@
+BinaryTree.BinaryTree()
+BinaryTree.insert(BinaryTreeNode)
+BinaryTree.search(java.lang.Comparable)
