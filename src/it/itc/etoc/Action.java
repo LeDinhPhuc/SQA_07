@@ -167,6 +167,7 @@ public class Action implements Cloneable {
       else s += "," + param;
     }
     s += ")";
+    System.out.printf("%s\n" , s);
     return s;
   }
 

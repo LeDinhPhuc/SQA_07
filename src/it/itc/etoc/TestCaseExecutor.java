@@ -338,11 +338,12 @@ public class TestCaseExecutor {
 		Method setUpExec = null;
 		Method tearDownExec = null;
 		try {
-			Class cl = Class.forName(classUnderTest);
+			Class<?> cl = Class.forName(classUnderTest);
 			setUpExec = cl.getDeclaredMethod("setUpExec", new Class[0]);
 			if (setUpExec != null)
 				setUpExec.invoke(null, new Object[0]);
 		} catch (Exception e) {
+			System.out.println(e.getMessage());
 		}
 		testCaseExecutions++;
 		chromosome = renameChromsomeVariables(chrom);
@@ -360,6 +361,7 @@ public class TestCaseExecutor {
 			}
 		objects = new Object[n + 1];
 		classes = new Class[n + 1];
+
 		resetExecutionTrace(classUnderTest);
 		int k = 0;
 		for (int i = 0; i < actions.length; i++) {
@@ -384,6 +386,7 @@ public class TestCaseExecutor {
 			if (tearDownExec != null)
 				tearDownExec.invoke(null, new Object[0]);
 		} catch (Exception e) {
+
 		}
 	}
 

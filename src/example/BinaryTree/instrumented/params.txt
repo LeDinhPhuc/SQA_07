@@ -1,3 +1,0 @@
-maxAttemptsPerTarget = 10
-maxTime = 60
-populationSize = 10

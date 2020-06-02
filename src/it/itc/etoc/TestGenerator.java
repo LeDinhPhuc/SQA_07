@@ -20,7 +20,6 @@ import it.itc.etoc.Population;
 import it.itc.etoc.Target;
 import it.itc.etoc.TestCaseExecutor;
 
-
 import java.util.*;
 import java.io.*;
 
@@ -29,7 +28,7 @@ class TestGenerator {
 	 * Data flow coverage instead of branch coverage.
 	 *
 	 */
-	public static boolean dataFlowCoverage = false;
+	public static boolean dataFlowCoverage = true;
 
 	/**
 	 * Junit class to be generated.
@@ -325,15 +324,18 @@ class TestGenerator {
 	public void generateTestCases(String signFile) {
 		Population.setChromosomeFormer(signFile);
 		List targetsToCover = getAllTargets();
+
 		long startTime = System.currentTimeMillis() / 1000;
 		long time = 0;
 		int attempts = 0;
 		displayInfo(time, targetsToCover.size());
+
 		while (targetsToCover.size() > 0 && time < maxTime) {
 			Iterator i = targets.iterator();
 			while (i.hasNext()) {
 				Target target = (Target) i.next();
 				Population curPopulation = Population.generateRandomPopulation();
+
 				Iterator j = target.getSubTargets().iterator();
 				while (j.hasNext()) {
 					Target tgt = (Target) j.next();
@@ -345,6 +347,7 @@ class TestGenerator {
 						updateCoveredTargets(curPopulation);
 						if (curPopulation.covers(tgt))
 							break;
+
 						if (dataFlowCoverage)
 							computeDataFlowFitness(curPopulation, (DataFlowTarget) tgt);
 						else
@@ -489,31 +492,14 @@ class TestGenerator {
 	}
 
 	public static void main(String args[]) throws Exception {
-		if (args.length < 3) {
-			System.err.println("Usage: java TestGenerator " + "file.sign target.txt paths.txt "
-					+ "[-params params.txt] [-junit testsuite.java] [-dataflow]");
-			System.exit(1);
-		}
+		String relativePathString = "src\\examples\\BinaryTree\\instrumented\\";
+		args = new String[] { relativePathString + "BinaryTree.sign", relativePathString + "BinaryTree.tgt",
+				relativePathString + "BinaryTree.path" };
 		String signFile = args[0];
 		targetFile = args[1];
 		pathsFile = args[2];
-		for (int i = 3; i < args.length; i++) {
-			if (args[i].equals("-junit") && args.length > i + 1) {
-				junitFile = args[i + 1];
-				i++;
-			}
-			if (args[i].equals("-params") && args.length > i + 1) {
-				paramsFile = args[i + 1];
-				i++;
-			}
-			if (args[i].equals("-dataflow"))
-				dataFlowCoverage = true;
-		}
-		TestGenerator tg;
-		if (dataFlowCoverage)
-			tg = new DataFlowTestGenerator();
-		else
-			tg = new TestGenerator();
+		TestGenerator tg = new DataFlowTestGenerator();
+
 		tg.generateTestCases(signFile);
 		tg.minimizeTestCases();
 		tg.printTestCases();
