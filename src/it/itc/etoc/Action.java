@@ -8,11 +8,11 @@
  */
 
 package it.itc.etoc;
+
 import java.util.*;
 
 import it.itc.etoc.Action;
 import it.itc.etoc.ChromosomeFormer;
-
 
 /**
  * Action in a chromosome test case descriptor.
@@ -32,11 +32,10 @@ public class Action implements Cloneable {
   /**
    * Formal parameter types: List&lt;String&gt;
    *
-   * Example: ("int", "B", "A", "int"). 
+   * Example: ("int", "B", "A", "int").
    */
   List parameterTypes = new LinkedList();
 
-  
   /**
    * Actual parameter values: List&lt;String&gt;
    *
@@ -79,15 +78,15 @@ public class Action implements Cloneable {
    */
   public List getParameterObjects() {
     List paramObjects = new LinkedList();
-    if (parameterTypes == null || parameterValues == null) 
+    if (parameterTypes == null || parameterValues == null)
       return paramObjects;
     Iterator i = parameterTypes.iterator();
     Iterator j = parameterValues.iterator();
     while (i.hasNext() && j.hasNext()) {
-      String paramType = (String)i.next();
-      String param = (String)j.next();
-      if (!ChromosomeFormer.isPrimitiveType(paramType)) 
-	paramObjects.add(param);
+      String paramType = (String) i.next();
+      String param = (String) j.next();
+      if (!ChromosomeFormer.isPrimitiveType(paramType))
+        paramObjects.add(param);
     }
     return paramObjects;
   }
@@ -154,20 +153,22 @@ public class Action implements Cloneable {
    * String representation of parameter types.
    */
   String parameterDescription() {
-    if (parameterTypes == null || parameterValues == null) return "";
+    if (parameterTypes == null || parameterValues == null)
+      return "";
     String s = "(";
     Iterator i = parameterTypes.iterator();
     Iterator j = parameterValues.iterator();
     while (i.hasNext() && j.hasNext()) {
-      String param = (String)i.next();
-      String paramId = (String)j.next();
+      String param = (String) i.next();
+      String paramId = (String) j.next();
       if (!ChromosomeFormer.isPrimitiveType(param))
-	param = paramId;
-      if (s.equals("(")) s += param;
-      else s += "," + param;
+        param = paramId;
+      if (s.equals("("))
+        s += param;
+      else
+        s += "," + param;
     }
     s += ")";
-    System.out.printf("%s\n" , s);
     return s;
   }
 
@@ -175,16 +176,19 @@ public class Action implements Cloneable {
    * String representation of parameter values.
    */
   String actualValues() {
-    if (parameterValues == null || parameterTypes == null) return "";
+    if (parameterValues == null || parameterTypes == null)
+      return "";
     String s = "";
     Iterator i = parameterValues.iterator();
     Iterator j = parameterTypes.iterator();
     while (i.hasNext() && j.hasNext()) {
-      String paramVal = (String)i.next();
-      String paramType = (String)j.next();
+      String paramVal = (String) i.next();
+      String paramType = (String) j.next();
       if (ChromosomeFormer.isPrimitiveType(paramType)) {
-	if (s.equals("")) s += paramVal;
-	else s += "," + paramVal;
+        if (s.equals(""))
+          s += paramVal;
+        else
+          s += "," + paramVal;
       }
     }
     return s;
@@ -195,12 +199,13 @@ public class Action implements Cloneable {
    */
   public int countPrimitiveTypes() {
     int n = 0;
-    if (parameterValues == null || parameterTypes == null) return n;
+    if (parameterValues == null || parameterTypes == null)
+      return n;
     Iterator i = parameterTypes.iterator();
     while (i.hasNext()) {
-      String paramType = (String)i.next();
+      String paramType = (String) i.next();
       if (ChromosomeFormer.isPrimitiveType(paramType))
-	n++;
+        n++;
     }
     return n;
   }
@@ -208,28 +213,28 @@ public class Action implements Cloneable {
   /**
    * Randomly changes a value of this action.
    *
-   * @param valIndex  Index of the primitive type value to change.
+   * @param valIndex Index of the primitive type value to change.
    */
   public void changeInputValue(int valIndex) {
-    if (parameterValues == null || parameterTypes == null) return;
+    if (parameterValues == null || parameterTypes == null)
+      return;
     List newParamVals = new LinkedList();
     int k = 0;
     Iterator i = parameterValues.iterator();
     Iterator j = parameterTypes.iterator();
     while (i.hasNext() && j.hasNext()) {
-      String paramVal = (String)i.next();
-      String paramType = (String)j.next();
+      String paramVal = (String) i.next();
+      String paramType = (String) j.next();
       if (ChromosomeFormer.isPrimitiveType(paramType) && k == valIndex) {
-	String newVal = ChromosomeFormer.buildValue(paramType);
-	newParamVals.add(newVal);
+        String newVal = ChromosomeFormer.buildValue(paramType);
+        newParamVals.add(newVal);
       } else {
-	newParamVals.add(paramVal);
+        newParamVals.add(paramVal);
       }
       if (ChromosomeFormer.isPrimitiveType(paramType))
-	k++;
+        k++;
     }
     parameterValues = newParamVals;
   }
 
 }
-

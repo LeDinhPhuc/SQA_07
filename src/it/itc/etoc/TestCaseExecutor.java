@@ -74,7 +74,8 @@ public class TestCaseExecutor {
 	 * @return Wrapper type/class.
 	 */
 	public Class mapTypeToClass(String type) {
-		System.out.println(type);
+		// Xóa
+		// System.out.println(type);
 		try {
 			if (type.indexOf("[") != -1)
 				type = type.substring(0, type.indexOf("["));
@@ -343,7 +344,7 @@ public class TestCaseExecutor {
 			if (setUpExec != null)
 				setUpExec.invoke(null, new Object[0]);
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			// System.out.println(e.getMessage());
 		}
 		testCaseExecutions++;
 		chromosome = renameChromsomeVariables(chrom);

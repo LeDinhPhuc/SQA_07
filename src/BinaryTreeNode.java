@@ -1,4 +1,3 @@
-
 public class BinaryTreeNode {
 	private BinaryTreeNode left;
 	private BinaryTreeNode right;
@@ -25,8 +24,10 @@ public class BinaryTreeNode {
 	}
 
 	public BinaryTreeNode search(Comparable x) {
-		if (x.compareTo(obj) == 0)
+		if (x.compareTo(obj) == 0) {
+			// Trả về đối tượng hiện tại
 			return this;
+		}
 		if (x.compareTo(obj) < 0)
 			if (left == null)
 				return null;

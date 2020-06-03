@@ -13,8 +13,8 @@ public class DataFlowPair {
 	public String var;
 
 	public DataFlowPair(int br, String v) {
-		branch = br;
-		var = v;
+		this.branch = br;
+		this.var = v;
 	}
 
 	public boolean equals(Object obj) {

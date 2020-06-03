@@ -4,6 +4,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="C:/Users/ledin/eclipse-workspace/SQA_07/lib/etoc.jar"/>
 	<classpathentry kind="lib" path="C:/Users/ledin/eclipse-workspace/SQA_07/lib/junit.jar"/>
-	<classpathentry kind="lib" path="C:/Users/ledin/eclipse-workspace/SQA_07/lib/openjava.jar"/>
+	<classpathentry kind="lib" path="C:/Users/ledin/eclipse-workspace/PSO_20192/openjava.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

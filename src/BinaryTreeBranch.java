@@ -1,12 +1,11 @@
-package examples.BinaryTree.instrumented;
+import java.util.*;
 
 import it.itc.etoc.*;
 
-public class BinaryTreeDataFlow {
-
+public class BinaryTreeBranch {
 	private BinaryTreeNode root;
 
-	public BinaryTreeDataFlow() {
+	public BinaryTreeBranch() {
 		trace.add(new Integer(1));
 		root = null;
 	}
@@ -42,14 +41,13 @@ public class BinaryTreeDataFlow {
 		return false;
 	}
 
-	static java.util.List trace;
+	static java.util.Set trace;
 
 	public static void newTrace() {
-
-		trace = new java.util.LinkedList();
+		trace = new java.util.HashSet();
 	}
 
-	public static java.util.List getTrace() {
+	public static java.util.Set getTrace() {
 		return trace;
 	}
 

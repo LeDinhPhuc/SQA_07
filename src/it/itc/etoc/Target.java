@@ -24,6 +24,7 @@ abstract class Target {
   }
 
   /**
+   * ít nhất 1 cá thể nào đó bao phủ target
    * At least one individual in population covers target.
    */
   public abstract boolean coveredBy(Chromosome id);

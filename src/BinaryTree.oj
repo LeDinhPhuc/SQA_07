@@ -1,6 +1,6 @@
+
 import it.itc.etoc.*;
-import it.itc.etoc.BranchInstrumentor;
-public class BinaryTree instantiates BranchInstrumentor {
+public class BinaryTree instantiates DataFlowInstrumentor {
   private BinaryTreeNode root;
 
   public BinaryTree() {

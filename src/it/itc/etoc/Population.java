@@ -210,6 +210,7 @@ class Population {
 		Iterator i = individuals.iterator();
 		while (i.hasNext()) {
 			Chromosome id = (Chromosome) i.next();
+			
 			if (target.coveredBy(id))
 				return true;
 		}

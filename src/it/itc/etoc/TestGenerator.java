@@ -8,8 +8,10 @@
  */
 
 package it.itc.etoc;
-
+import openjava.ojc.*;
 import java.util.regex.*;
+
+import javax.xml.transform.Templates;
 
 import it.itc.etoc.BranchTarget;
 import it.itc.etoc.Chromosome;
@@ -197,6 +199,9 @@ class TestGenerator {
 				}
 				targets.add(tgt);
 			}
+
+			System.out.println(targets.size());
+
 		} catch (NumberFormatException e) {
 			System.err.println("Wrong format file: " + targetFile);
 			System.exit(1);
@@ -250,7 +255,8 @@ class TestGenerator {
 		Iterator i = targets.iterator();
 		while (i.hasNext()) {
 			Target tgt = (Target) i.next();
-			System.out.println(tgt);
+			// Xóa
+			// System.out.println(tgt);
 			targetsToCover.addAll(tgt.getSubTargets());
 		}
 		return targetsToCover;
@@ -297,7 +303,8 @@ class TestGenerator {
 			System.out.print("\b");
 		System.out.flush();
 		displayedInfo = "Time: " + t + " s, targets to cover: " + cov + "      ";
-		System.out.print(displayedInfo);
+		// Xóa
+		System.out.println(displayedInfo);
 		System.out.flush();
 	}
 
@@ -319,6 +326,7 @@ class TestGenerator {
 	}
 
 	/**
+	 * Sinh testcase 
 	 * Test case generation and execution.
 	 */
 	public void generateTestCases(String signFile) {
@@ -331,6 +339,8 @@ class TestGenerator {
 		displayInfo(time, targetsToCover.size());
 
 		while (targetsToCover.size() > 0 && time < maxTime) {
+			// iterator để duyệt phần tử trong list cho dạng con trỏ
+			// Cái mảng targets này thì mình phải tự sinh rồi, ko thể lấy của nó được
 			Iterator i = targets.iterator();
 			while (i.hasNext()) {
 				Target target = (Target) i.next();
@@ -338,20 +348,27 @@ class TestGenerator {
 
 				Iterator j = target.getSubTargets().iterator();
 				while (j.hasNext()) {
+					// target trong file sign
 					Target tgt = (Target) j.next();
+					
 					if (curPopulation.covers(tgt))
 						continue;
+					// Số lần chạy tối đa
 					attempts = 0;
 					while (attempts < maxAttemptsPerTarget) {
+						// thực thi test case
 						curPopulation.executeTestCases();
+						// cập nhật lại tập target path
 						updateCoveredTargets(curPopulation);
+						// nếu tiêu chí bao phủ target path thỏa mãn thì break
 						if (curPopulation.covers(tgt))
 							break;
-
-						if (dataFlowCoverage)
+						// nếu chưa thì sẽ đánh giá hàm fitness
+//						if (dataFlowCoverage)
 							computeDataFlowFitness(curPopulation, (DataFlowTarget) tgt);
-						else
-							computeBranchFitness(curPopulation, (BranchTarget) tgt);
+//						else
+//							computeBranchFitness(curPopulation, (BranchTarget) tgt);
+						// tái tạo lại tập quần thể
 						curPopulation = curPopulation.generateNewPopulation();
 						attempts++;
 					}
@@ -492,15 +509,23 @@ class TestGenerator {
 	}
 
 	public static void main(String args[]) throws Exception {
-		String relativePathString = "src\\examples\\BinaryTree\\instrumented\\";
+		String relativePathString = "src/";
 		args = new String[] { relativePathString + "BinaryTree.sign", relativePathString + "BinaryTree.tgt",
 				relativePathString + "BinaryTree.path" };
 		String signFile = args[0];
 		targetFile = args[1];
 		pathsFile = args[2];
 		TestGenerator tg = new DataFlowTestGenerator();
-
-		tg.generateTestCases(signFile);
+		String[] srcfiles = { relativePathString + "BinaryTree.oj" };
+		openjava.ojc.Main.main(srcfiles);
+		Thread.sleep(6000);
+		
+		
+		
+		// Sinh testcase
+		tg.generateTestCases(signFile);		
+		
+		// Chưa đọc
 		tg.minimizeTestCases();
 		tg.printTestCases();
 		tg.printJunitFile();

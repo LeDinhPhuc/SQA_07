@@ -1,12 +1,3 @@
-/**
- * @(#) ChromosomeFormer.java	v. 1.0 - March 5, 2003
- *
- * This software was written by Paolo Tonella (tonella@itc.it) at ITC-irst,
- * Centro per la Ricerca Scientifica e Tecnlogica.
- *
- * Distributed under the Gnu GPL (General Public License). See GPL.TXT
- */
-
 package it.itc.etoc;
 
 import java.util.*;
@@ -25,18 +16,10 @@ import java.lang.reflect.*;
 
 /**
  * Manipulates chromosomes for evolutionary testing of classes.
- *
- * <p>
- * <img src=ChromosomeFormer.png width=500>
- *
- * <p>
  * This is the typical sequence of invocation:
- * 
- * <pre>
  * ChromosomeFormer chromFormer = new ChromosomeFormer();
  * chromFormer.readSignatures("file.sign");
  * chromFormer.buildNewChromosome();
- * </pre>
  */
 public class ChromosomeFormer {
 
@@ -70,7 +53,7 @@ public class ChromosomeFormer {
   private Chromosome chromosome;
 
   /**
-   * Class under test.
+   * Lớp java trace test
    */
   String classUnderTest;
 
@@ -779,10 +762,13 @@ public class ChromosomeFormer {
             usedClassNames.add(className);
           }
           r = s;
+
         }
       }
+
       String r1 = r.substring(0, r.indexOf("("));
       classUnderTest = r1.substring(0, r1.lastIndexOf("."));
+
       while ((s = in.readLine()) != null) {
         if (s.length() > 0) {
           String className = s.substring(0, s.indexOf(" as ")).trim();
