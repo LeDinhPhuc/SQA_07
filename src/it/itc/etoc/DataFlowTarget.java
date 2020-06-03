@@ -23,12 +23,13 @@ class DataFlowTarget extends Target {
   static int HASH_CODE_MAGIC_NUMBER = 1341;
 
   /**
+   * Mỗi target là một sự phụ thuộc dữ liệu.
    * Each target is a data dependence.
    */
   public DataFlowTarget(int src, int dst, String var) {
-    source = src;
-    destination = dst;
-    variable = var;
+    this.source = src;
+    this.destination = dst;
+    this.variable = var;
   }
 
   /**
@@ -40,6 +41,7 @@ class DataFlowTarget extends Target {
   }
 
   /**
+   * Kiểm tra xem 2 cái target có equals nhau không
    * Used in Map's.
    */
   public boolean equals(Object obj) {
@@ -63,6 +65,7 @@ class DataFlowTarget extends Target {
   }
 
   /**
+   * 
    * Source of data dependence.
    */
   public BranchTarget getSourceBranch() {

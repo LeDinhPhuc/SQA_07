@@ -8,6 +8,7 @@
  */
 
 package it.itc.etoc;
+
 import openjava.ojc.*;
 import java.util.regex.*;
 
@@ -83,7 +84,7 @@ class TestGenerator {
 	/**
 	 * Execution timeout.
 	 */
-	int maxTime = 60; // seconds
+	int maxTime = 1; // seconds
 
 	/**
 	 * Text file with list of targets to be covered.
@@ -159,6 +160,7 @@ class TestGenerator {
 						maxAttemptsPerTarget = x;
 					if (s.indexOf("maxTime") != -1 && x != -1)
 						maxTime = x;
+
 					if (s.indexOf("populationSize") != -1 && x != -1)
 						Population.populationSize = x;
 				}
@@ -188,6 +190,7 @@ class TestGenerator {
 			BufferedReader in = new BufferedReader(new FileReader(targetFile));
 			while ((s = in.readLine()) != null) {
 				Matcher m = p.matcher(s);
+
 				if (!m.find())
 					continue;
 				String method = m.group(1);
@@ -256,7 +259,6 @@ class TestGenerator {
 		while (i.hasNext()) {
 			Target tgt = (Target) i.next();
 			// Xóa
-			// System.out.println(tgt);
 			targetsToCover.addAll(tgt.getSubTargets());
 		}
 		return targetsToCover;
@@ -278,7 +280,7 @@ class TestGenerator {
 	}
 
 	/**
-	 * Determines targets yet to be covered.
+	 * Xác định target path chưa được bao phủ Determines targets yet to be covered.
 	 *
 	 * @return Lst<targetsToCover: BranchTarget>
 	 */
@@ -299,22 +301,23 @@ class TestGenerator {
 	 * Displays execution info at run time.
 	 */
 	public void displayInfo(long t, int cov) {
-		for (int i = 0; i < displayedInfo.length(); i++)
-			System.out.print("\b");
+		// for (int i = 0; i < displayedInfo.length(); i++)
+		// System.out.print("\b");
 		System.out.flush();
 		displayedInfo = "Time: " + t + " s, targets to cover: " + cov + "      ";
 		// Xóa
-		System.out.println(displayedInfo);
+		System.out.println(displayedInfo + "\n");
 		System.out.flush();
 	}
 
 	/**
 	 * Fitness for branch coverage.
 	 */
-	public void computeBranchFitness(Population pop, Target tgt) {
-		Set tgtPathPoints = (Set) paths.get(tgt);
-		pop.computeBranchFitness(tgtPathPoints);
-	}
+	// Xóa
+	// public void computeBranchFitness(Population pop, Target tgt) {
+	// Set tgtPathPoints = (Set) paths.get(tgt);
+	// pop.computeBranchFitness(tgtPathPoints);
+	// }
 
 	/**
 	 * Fitness for data flow coverage.
@@ -326,11 +329,11 @@ class TestGenerator {
 	}
 
 	/**
-	 * Sinh testcase 
-	 * Test case generation and execution.
+	 * Sinh testcase Test case generation and execution.
 	 */
 	public void generateTestCases(String signFile) {
 		Population.setChromosomeFormer(signFile);
+		// Tập target path còn phải sinh test case
 		List targetsToCover = getAllTargets();
 
 		long startTime = System.currentTimeMillis() / 1000;
@@ -340,7 +343,8 @@ class TestGenerator {
 
 		while (targetsToCover.size() > 0 && time < maxTime) {
 			// iterator để duyệt phần tử trong list cho dạng con trỏ
-			// Cái mảng targets này thì mình phải tự sinh rồi, ko thể lấy của nó được
+			// Cái mảng targets này thì mình phải tự sinh rồi, ko thể lấy của nó được, vì
+			// hiện tại nó đang fix cứng
 			Iterator i = targets.iterator();
 			while (i.hasNext()) {
 				Target target = (Target) i.next();
@@ -350,7 +354,7 @@ class TestGenerator {
 				while (j.hasNext()) {
 					// target trong file sign
 					Target tgt = (Target) j.next();
-					
+
 					if (curPopulation.covers(tgt))
 						continue;
 					// Số lần chạy tối đa
@@ -364,20 +368,22 @@ class TestGenerator {
 						if (curPopulation.covers(tgt))
 							break;
 						// nếu chưa thì sẽ đánh giá hàm fitness
-//						if (dataFlowCoverage)
-							computeDataFlowFitness(curPopulation, (DataFlowTarget) tgt);
-//						else
-//							computeBranchFitness(curPopulation, (BranchTarget) tgt);
+						// if (dataFlowCoverage)
+						computeDataFlowFitness(curPopulation, (DataFlowTarget) tgt);
+						// else
+						// computeBranchFitness(curPopulation, (BranchTarget) tgt);
 						// tái tạo lại tập quần thể
 						curPopulation = curPopulation.generateNewPopulation();
 						attempts++;
 					}
 				}
 			}
+			// Cập nhật những target ko được bao phủ
 			targetsToCover = computeNotYetCoveredTargets();
 			time = System.currentTimeMillis() / 1000 - startTime;
 			displayInfo(time, targetsToCover.size());
 		}
+		System.out.println("\n");
 		System.out.println();
 	}
 
@@ -390,7 +396,7 @@ class TestGenerator {
 				minimizeTestCases();
 			if (junitFile == null)
 				return;
-			String junitClass = junitFile.substring(0, junitFile.indexOf("."));
+			String junitClass = junitFile.substring(junitFile.lastIndexOf("/") + 1, junitFile.indexOf("."));
 			PrintStream out = new PrintStream(new FileOutputStream(junitFile));
 			out.println("import junit.framework.*;");
 			out.println();
@@ -510,21 +516,23 @@ class TestGenerator {
 
 	public static void main(String args[]) throws Exception {
 		String relativePathString = "src/";
-		args = new String[] { relativePathString + "BinaryTree.sign", relativePathString + "BinaryTree.tgt",
-				relativePathString + "BinaryTree.path" };
-		String signFile = args[0];
-		targetFile = args[1];
-		pathsFile = args[2];
-		TestGenerator tg = new DataFlowTestGenerator();
-		String[] srcfiles = { relativePathString + "BinaryTree.oj" };
+		args = new String[] { relativePathString + "BinaryTree.oj", "BinaryTree.sign", "BinaryTree.tgt",
+				"BinaryTree.path", relativePathString + "params.txt", relativePathString + "BinaryTree.junit" };
+
+		String[] srcfiles = { args[0] };
+		String signFile = args[1];
+		targetFile = args[2];
+		pathsFile = args[3];
+		paramsFile = args[4];
+		junitFile = args[5];
 		openjava.ojc.Main.main(srcfiles);
-		Thread.sleep(6000);
-		
-		
-		
+		Thread.sleep(5000);
+		TestGenerator tg = new DataFlowTestGenerator();
+		// Phân tích mã nguồn bằng openjava
+
 		// Sinh testcase
-		tg.generateTestCases(signFile);		
-		
+		tg.generateTestCases(signFile);
+
 		// Chưa đọc
 		tg.minimizeTestCases();
 		tg.printTestCases();

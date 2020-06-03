@@ -22,13 +22,14 @@ import java.util.Vector;
  * The class <code>CommandArguments</code>
  * <p>
  * For example
+ * 
  * <pre>
  * </pre>
  * <p>
  *
- * @author   Michiaki Tatsubori
- * @version  1.0
- * @since    $Id: CommandArguments.java,v 1.4 2003/06/18 03:31:53 tatsubori Exp $
+ * @author Michiaki Tatsubori
+ * @version 1.0
+ * @since $Id: CommandArguments.java,v 1.4 2003/06/18 03:31:53 tatsubori Exp $
  * @see java.lang.Object
  */
 public class CommandArguments {
@@ -53,16 +54,16 @@ public class CommandArguments {
         if (originalArgs == null)
             return new File[0];
 
-        //File[] result;
-        //int file_num = originalArgs.length - countUpOptions( originalArgs );
-        //result = new File[file_num];
+        // File[] result;
+        // int file_num = originalArgs.length - countUpOptions( originalArgs );
+        // result = new File[file_num];
         Vector srcfiles = new Vector();
 
         for (int i = 0, count = 0; i < originalArgs.length; ++i) {
             if (isOption(originalArgs[i])) {
                 registerOption(originalArgs[i].substring(1));
             } else {
-                //result[count++] = new File( originalArgs[i] );
+                // result[count++] = new File( originalArgs[i] );
                 addFiles(originalArgs[i], srcfiles);
             }
         }
@@ -95,6 +96,7 @@ public class CommandArguments {
                     break;
                 dest.add(new File(filename));
             }
+            reader.close();
         } catch (IOException e) {
             System.err.println("Bad file format : " + arg);
             return;
@@ -171,10 +173,7 @@ public class CommandArguments {
     }
 
     public JavaCompiler getJavaCompiler()
-        throws
-            ClassNotFoundException,
-            InstantiationException,
-            IllegalAccessException {
+            throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         String compiler_name = getOption("compiler", "c");
         if (compiler_name == null) {
             compiler_name = "jp.ac.tsukuba.openjava.SunJavaCompiler";

@@ -403,10 +403,10 @@ public class TestCaseExecutor {
 			Method getTrace = cl.getDeclaredMethod("getTrace", new Class[0]);
 			Collection trace = (Collection) getTrace.invoke(null, new Object[0]);
 			Collection coveredBranches;
-			if (TestGenerator.dataFlowCoverage)
-				coveredBranches = new LinkedList();
-			else
-				coveredBranches = new HashSet();
+			// if (TestGenerator.dataFlowCoverage)
+			coveredBranches = new LinkedList();
+			// else
+			// coveredBranches = new HashSet();
 			Iterator j = trace.iterator();
 			while (j.hasNext()) {
 				BranchTarget branch = new BranchTarget(((Integer) j.next()).intValue());
@@ -463,8 +463,8 @@ public class TestCaseExecutor {
 	 * @param classUnderTest The class being tested.
 	 */
 	public void printBranchExecutionTrace(String classUnderTest) {
-		if (TestGenerator.dataFlowCoverage)
-			return;
+		// if (TestGenerator.dataFlowCoverage)
+		// return;
 		System.out.print("Trace:");
 		Set trace = (Set) getExecutionTrace(classUnderTest);
 		Iterator i = trace.iterator();

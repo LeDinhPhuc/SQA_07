@@ -133,26 +133,6 @@ class Population {
 		return newPopulation;
 	}
 
-	/**
-	 * Determines overall fitness and sorts individuals by decreasing fitness.
-	 * 
-	 * To use for branch coverage.
-	 */
-	public void computeBranchFitness(Set path) {
-		overallFitness = 0;
-		Iterator i = individuals.iterator();
-		while (i.hasNext()) {
-			Chromosome id = (Chromosome) i.next();
-			overallFitness += id.computeBranchFitness(path);
-		}
-		Collections.sort(individuals);
-	}
-
-	/**
-	 * Determines overall fitness and sorts individuals by decreasing fitness.
-	 * 
-	 * To use for data flow coverage.
-	 */
 	public void computeDataFlowFitness(DataFlowTarget tgt, Set path1, Set path2) {
 		overallFitness = 0;
 		Iterator i = individuals.iterator();
@@ -170,16 +150,14 @@ class Population {
 		TestCaseExecutor exec = new TestCaseExecutor();
 
 		String classUnderTest = chromosomeFormer.getClassUnderTest();
-		// classUnderTest = "BinaryTree";
+
 		Iterator i = individuals.iterator();
 		while (i.hasNext()) {
 			Chromosome id = (Chromosome) i.next();
 			exec.execute(classUnderTest, id.toString());
 			Collection trace = exec.getExecutionTrace(classUnderTest);
-			if (TestGenerator.dataFlowCoverage)
-				id.setCoveredDataFlows((List) trace);
-			else
-				id.setCoveredBranches((Set) trace);
+			// if (TestGenerator.dataFlowCoverage)
+			id.setCoveredDataFlows((List) trace);
 		}
 	}
 
@@ -210,7 +188,7 @@ class Population {
 		Iterator i = individuals.iterator();
 		while (i.hasNext()) {
 			Chromosome id = (Chromosome) i.next();
-			
+
 			if (target.coveredBy(id))
 				return true;
 		}

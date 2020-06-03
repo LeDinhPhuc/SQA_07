@@ -15,10 +15,9 @@ import java.io.*;
 import java.lang.reflect.*;
 
 /**
- * Manipulates chromosomes for evolutionary testing of classes.
- * This is the typical sequence of invocation:
- * ChromosomeFormer chromFormer = new ChromosomeFormer();
- * chromFormer.readSignatures("file.sign");
+ * Manipulates chromosomes for evolutionary testing of classes. This is the
+ * typical sequence of invocation: ChromosomeFormer chromFormer = new
+ * ChromosomeFormer(); chromFormer.readSignatures("file.sign");
  * chromFormer.buildNewChromosome();
  */
 public class ChromosomeFormer {
@@ -60,8 +59,12 @@ public class ChromosomeFormer {
   /**
    * Accessor to class under test.
    */
-  String getClassUnderTest() {
+  public String getClassUnderTest() {
     return classUnderTest;
+  }
+
+  public void setClassUnderTest(String classUnderTest) {
+    this.classUnderTest = classUnderTest;
   }
 
   /**
@@ -741,9 +744,11 @@ public class ChromosomeFormer {
           String className = s1.substring(0, s1.lastIndexOf("."));
           String methodName = s1.substring(s1.lastIndexOf(".") + 1);
           String[] paramNames = s.substring(s.indexOf("(") + 1, s.indexOf(")")).split(",");
+
           if (paramNames.length == 1 && paramNames[0].equals(""))
             paramNames = new String[0];
           List params = new LinkedList();
+
           for (int i = 0; i < paramNames.length; i++) {
             params.add(paramNames[i]);
             String usedClass = paramNames[i];
@@ -762,13 +767,14 @@ public class ChromosomeFormer {
             usedClassNames.add(className);
           }
           r = s;
-
         }
       }
 
       String r1 = r.substring(0, r.indexOf("("));
-      classUnderTest = r1.substring(0, r1.lastIndexOf("."));
+      String classUnderTest = r1.substring(0, r1.lastIndexOf("."));
+      setClassUnderTest(classUnderTest);
 
+      // Binary tail
       while ((s = in.readLine()) != null) {
         if (s.length() > 0) {
           String className = s.substring(0, s.indexOf(" as ")).trim();

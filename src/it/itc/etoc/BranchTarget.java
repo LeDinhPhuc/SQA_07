@@ -41,8 +41,9 @@ class BranchTarget extends Target {
   /**
    * At least one individual in population covers branch.
    */
+  // Xóa
   public boolean coveredBy(Chromosome id) {
-    return id.coversBranch(this);
+	return false;
+//    return id.coversBranch(this);
   }
-
 }
