@@ -187,6 +187,7 @@ public class BranchInstrumentor extends openjava.mop.OJClass {
             pathFile.print(" " + br);
         }
         pathFile.println();
+        // pathFile.close();
     }
 
     /**
@@ -214,6 +215,7 @@ public class BranchInstrumentor extends openjava.mop.OJClass {
      */
     private void printTargetEnd() {
         targetFile.println();
+        // targetFile.close();
     }
 
     /**
@@ -247,9 +249,9 @@ public class BranchInstrumentor extends openjava.mop.OJClass {
      */
     private void openOutputFiles() {
         try {
-            signatureFile = new java.io.PrintStream(new java.io.FileOutputStream(className + ".sign"));
-            targetFile = new java.io.PrintStream(new java.io.FileOutputStream(className + ".tgt"));
-            pathFile = new java.io.PrintStream(new java.io.FileOutputStream(className + ".path"));
+            signatureFile = new java.io.PrintStream(new java.io.FileOutputStream("src\\" + className + ".sign"));
+            targetFile = new java.io.PrintStream(new java.io.FileOutputStream("src\\" + className + ".tgt"));
+            pathFile = new java.io.PrintStream(new java.io.FileOutputStream("src\\" + className + ".path"));
         } catch (java.io.FileNotFoundException e) {
             System.err.println("File not found: " + e);
             System.exit(1);
@@ -281,6 +283,7 @@ public class BranchInstrumentor extends openjava.mop.OJClass {
         }
         insertTraceCreator();
         insertTraceAccessor();
+        // signatureFile.close();
     }
 
     public static java.util.Set computeUncovered(java.lang.String tgtFile, java.util.Set covered) {

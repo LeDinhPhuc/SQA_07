@@ -339,12 +339,12 @@ class TestGenerator {
 		long startTime = System.currentTimeMillis() / 1000;
 		long time = 0;
 		int attempts = 0;
-		displayInfo(time, targetsToCover.size());
 
+		displayInfo(time, targetsToCover.size());
+		System.out.println(targetsToCover.size());
 		while (targetsToCover.size() > 0 && time < maxTime) {
+
 			// iterator để duyệt phần tử trong list cho dạng con trỏ
-			// Cái mảng targets này thì mình phải tự sinh rồi, ko thể lấy của nó được, vì
-			// hiện tại nó đang fix cứng
 			Iterator i = targets.iterator();
 			while (i.hasNext()) {
 				Target target = (Target) i.next();
@@ -516,8 +516,9 @@ class TestGenerator {
 
 	public static void main(String args[]) throws Exception {
 		String relativePathString = "src/";
-		args = new String[] { relativePathString + "BinaryTree.oj", "BinaryTree.sign", "BinaryTree.tgt",
-				"BinaryTree.path", relativePathString + "params.txt", relativePathString + "BinaryTree.junit" };
+		args = new String[] { relativePathString + "BinaryTree.oj", relativePathString + "BinaryTree.sign",
+				relativePathString + "BinaryTree.tgt", relativePathString + "BinaryTree.path",
+				relativePathString + "params.txt", relativePathString + "BinaryTree.junit" };
 
 		String[] srcfiles = { args[0] };
 		String signFile = args[1];
@@ -525,15 +526,12 @@ class TestGenerator {
 		pathsFile = args[3];
 		paramsFile = args[4];
 		junitFile = args[5];
-		openjava.ojc.Main.main(srcfiles);
-		Thread.sleep(5000);
+//		 openjava.ojc.Main.main(srcfiles);
+//		 Thread.sleep(15000);
 		TestGenerator tg = new DataFlowTestGenerator();
-		// Phân tích mã nguồn bằng openjava
 
-		// Sinh testcase
 		tg.generateTestCases(signFile);
 
-		// Chưa đọc
 		tg.minimizeTestCases();
 		tg.printTestCases();
 		tg.printJunitFile();
