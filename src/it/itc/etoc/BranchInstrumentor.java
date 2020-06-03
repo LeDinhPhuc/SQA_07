@@ -187,7 +187,6 @@ public class BranchInstrumentor extends openjava.mop.OJClass {
             pathFile.print(" " + br);
         }
         pathFile.println();
-        // pathFile.close();
     }
 
     /**
@@ -215,7 +214,6 @@ public class BranchInstrumentor extends openjava.mop.OJClass {
      */
     private void printTargetEnd() {
         targetFile.println();
-        // targetFile.close();
     }
 
     /**
@@ -283,7 +281,6 @@ public class BranchInstrumentor extends openjava.mop.OJClass {
         }
         insertTraceCreator();
         insertTraceAccessor();
-        // signatureFile.close();
     }
 
     public static java.util.Set computeUncovered(java.lang.String tgtFile, java.util.Set covered) {
