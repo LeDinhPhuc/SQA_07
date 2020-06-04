@@ -1,4 +1,3 @@
-
 import it.itc.etoc.*;
 public class BinaryTree instantiates DataFlowInstrumentor {
   private BinaryTreeNode root;

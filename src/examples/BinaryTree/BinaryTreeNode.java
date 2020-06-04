@@ -4,7 +4,6 @@ public class BinaryTreeNode {
 	private BinaryTreeNode left;
 	private BinaryTreeNode right;
 	private Comparable obj;
-
 	public BinaryTreeNode(Comparable x) {
 		obj = x;
 		left = null;

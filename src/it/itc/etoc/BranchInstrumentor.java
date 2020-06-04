@@ -14,6 +14,8 @@ package it.itc.etoc;
 import openjava.mop.*;
 import openjava.ptree.*;
 import java.io.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Parameter;
 import java.util.*;
 
 import it.itc.etoc.BranchTraceVisitor;
@@ -34,291 +36,318 @@ import it.itc.etoc.BranchTraceVisitor;
  */
 public class BranchInstrumentor extends openjava.mop.OJClass {
 
-    public static int branchCounter = 0;
+	public static int branchCounter = 0;
 
-    java.lang.String className;
+	java.lang.String className;
 
-    java.io.PrintStream signatureFile;
+	java.io.PrintStream signatureFile;
 
-    java.io.PrintStream targetFile;
+	java.io.PrintStream targetFile;
 
-    java.io.PrintStream pathFile;
+	java.io.PrintStream pathFile;
 
-    boolean isFirstTarget = true;
+	boolean isFirstTarget = true;
 
-    static java.lang.String traceInterfaceType = "java.util.Set";
+	static java.lang.String traceInterfaceType = "java.util.Set";
 
-    static java.lang.String traceConcreteType = "java.util.HashSet";
+	static java.lang.String traceConcreteType = "java.util.HashSet";
 
-    public java.lang.String getClassName() {
-        return className;
-    }
+	public java.lang.String getClassName() {
+		return className;
+	}
 
-    /**
-     * Inserts import statements (java.util.*) at the beginning of Java file.
-     *
-     * <p>
-     * Currently unused.
-     */
-    public void insertImports() {
-        try {
-            openjava.ptree.ParseTreeObject pt = getSourceCode();
-            while (!(pt instanceof openjava.ptree.CompilationUnit)) {
-                pt = pt.getParent();
-            }
-            openjava.ptree.CompilationUnit cu = (openjava.ptree.CompilationUnit) pt;
-            java.lang.String[] oldImports = cu.getDeclaredImports();
-            java.lang.String[] newImports = new java.lang.String[oldImports.length + 2];
-            System.arraycopy(oldImports, 0, newImports, 0, oldImports.length);
-            newImports[oldImports.length] = "java.util.*;";
-            newImports[oldImports.length + 1] = "it.itc.etoc.*;";
-            cu.setDeclaredImports(newImports);
-        } catch (openjava.mop.CannotAlterException e) {
-            System.err.println(e);
-            System.exit(1);
-        }
-    }
+	/**
+	 * Inserts import statements (java.util.*) at the beginning of Java file.
+	 *
+	 * <p>
+	 * Currently unused.
+	 */
+	public void insertImports() {
+		try {
+			openjava.ptree.ParseTreeObject pt = getSourceCode();
+			while (!(pt instanceof openjava.ptree.CompilationUnit)) {
+				pt = pt.getParent();
+			}
+			openjava.ptree.CompilationUnit cu = (openjava.ptree.CompilationUnit) pt;
+			java.lang.String[] oldImports = cu.getDeclaredImports();
+			java.lang.String[] newImports = new java.lang.String[oldImports.length + 2];
+			System.arraycopy(oldImports, 0, newImports, 0, oldImports.length);
+			newImports[oldImports.length] = "java.util.*;";
+			newImports[oldImports.length + 1] = "it.itc.etoc.*;";
+			cu.setDeclaredImports(newImports);
+		} catch (openjava.mop.CannotAlterException e) {
+			System.err.println(e);
+			System.exit(1);
+		}
+	}
 
-    /**
-     * Adds field trace to class being instrumented.
-     */
-    public void insertTraceField() {
-        try {
-            openjava.mop.OJModifier mod = OJModifier.forModifier(OJModifier.STATIC);
-            openjava.ptree.FieldDeclaration fd = new openjava.ptree.FieldDeclaration(
-                    new openjava.ptree.ModifierList(ModifierList.STATIC),
-                    TypeName.forOJClass(OJClass.forName(traceInterfaceType)), "trace",
-                    new openjava.ptree.AllocationExpression(OJClass.forName(traceConcreteType),
-                            new openjava.ptree.ExpressionList()));
-            openjava.mop.OJField f = new openjava.mop.OJField(getEnvironment(), this, fd);
-            addField(f);
-        } catch (openjava.mop.OJClassNotFoundException e) {
-            System.err.println(e);
-            System.exit(1);
-        } catch (openjava.mop.CannotAlterException e) {
-            System.err.println(e);
-            System.exit(1);
-        }
-    }
+	/**
+	 * Adds field trace to class being instrumented.
+	 */
+	public void insertTraceField() {
+		try {
+			openjava.mop.OJModifier mod = OJModifier.forModifier(OJModifier.STATIC);
+			openjava.ptree.FieldDeclaration fd = new openjava.ptree.FieldDeclaration(
+					new openjava.ptree.ModifierList(ModifierList.STATIC),
+					TypeName.forOJClass(OJClass.forName(traceInterfaceType)), "trace",
+					new openjava.ptree.AllocationExpression(OJClass.forName(traceConcreteType),
+							new openjava.ptree.ExpressionList()));
+			openjava.mop.OJField f = new openjava.mop.OJField(getEnvironment(), this, fd);
+			addField(f);
+		} catch (openjava.mop.OJClassNotFoundException e) {
+			System.err.println(e);
+			System.exit(1);
+		} catch (openjava.mop.CannotAlterException e) {
+			System.err.println(e);
+			System.exit(1);
+		}
+	}
 
-    /**
-     * Adds method getTrace to class being instrumented.
-     */
-    public void insertTraceAccessor() {
-        try {
-            openjava.ptree.StatementList body = makeStatementList("return trace;");
-            openjava.mop.OJModifier mod = OJModifier.forModifier(OJModifier.PUBLIC);
-            mod = mod.add(OJModifier.STATIC);
-            openjava.mop.OJMethod m = new openjava.mop.OJMethod(this, mod, OJClass.forName(traceInterfaceType),
-                    "getTrace", new openjava.mop.OJClass[0], new openjava.mop.OJClass[0], body);
-            addMethod(m);
-        } catch (openjava.mop.OJClassNotFoundException e) {
-            System.err.println(e);
-            System.exit(1);
-        } catch (openjava.mop.CannotAlterException e) {
-            System.err.println(e);
-            System.exit(1);
-        } catch (openjava.mop.MOPException e) {
-            System.err.println(e);
-            System.exit(1);
-        }
-    }
+	/**
+	 * Adds method getTrace to class being instrumented.
+	 */
+	public void insertTraceAccessor() {
+		try {
+			openjava.ptree.StatementList body = makeStatementList("return trace;");
+			openjava.mop.OJModifier mod = OJModifier.forModifier(OJModifier.PUBLIC);
+			mod = mod.add(OJModifier.STATIC);
+			openjava.mop.OJMethod m = new openjava.mop.OJMethod(this, mod, OJClass.forName(traceInterfaceType),
+					"getTrace", new openjava.mop.OJClass[0], new openjava.mop.OJClass[0], body);
+			addMethod(m);
+		} catch (openjava.mop.OJClassNotFoundException e) {
+			System.err.println(e);
+			System.exit(1);
+		} catch (openjava.mop.CannotAlterException e) {
+			System.err.println(e);
+			System.exit(1);
+		} catch (openjava.mop.MOPException e) {
+			System.err.println(e);
+			System.exit(1);
+		}
+	}
 
-    /**
-     * Adds method newTrace to class being instrumented.
-     */
-    public void insertTraceCreator() {
-        try {
-            openjava.ptree.StatementList body = makeStatementList("trace = new " + traceConcreteType + "();");
-            openjava.mop.OJModifier mod = OJModifier.forModifier(OJModifier.PUBLIC);
-            mod = mod.add(OJModifier.STATIC);
-            openjava.mop.OJMethod m = new openjava.mop.OJMethod(this, mod, OJClass.forName("void"), "newTrace",
-                    new openjava.mop.OJClass[0], new openjava.mop.OJClass[0], body);
-            addMethod(m);
-        } catch (openjava.mop.OJClassNotFoundException e) {
-            System.err.println(e);
-            System.exit(1);
-        } catch (openjava.mop.CannotAlterException e) {
-            System.err.println(e);
-            System.exit(1);
-        } catch (openjava.mop.MOPException e) {
-            System.err.println(e);
-            System.exit(1);
-        }
-    }
+	/**
+	 * Adds method newTrace to class being instrumented.
+	 */
+	public void insertTraceCreator() {
+		try {
+			openjava.ptree.StatementList body = makeStatementList("trace = new " + traceConcreteType + "();");
+			openjava.mop.OJModifier mod = OJModifier.forModifier(OJModifier.PUBLIC);
+			mod = mod.add(OJModifier.STATIC);
+			openjava.mop.OJMethod m = new openjava.mop.OJMethod(this, mod, OJClass.forName("void"), "newTrace",
+					new openjava.mop.OJClass[0], new openjava.mop.OJClass[0], body);
+			addMethod(m);
+		} catch (openjava.mop.OJClassNotFoundException e) {
+			System.err.println(e);
+			System.exit(1);
+		} catch (openjava.mop.CannotAlterException e) {
+			System.err.println(e);
+			System.exit(1);
+		} catch (openjava.mop.MOPException e) {
+			System.err.println(e);
+			System.exit(1);
+		}
+	}
 
-    /**
-     * Creates a statement that adds a branch id (Integer) to trace.
-     */
-    public openjava.ptree.Statement makeTraceStatement() {
-        openjava.ptree.Statement traceBranch = null;
-        try {
-            branchCounter++;
-            traceBranch = makeStatement("trace.add(new java.lang.Integer(" + branchCounter + "));");
-            printTarget(branchCounter);
-            printPath(branchCounter);
-        } catch (openjava.mop.MOPException e) {
-            System.err.println(e);
-            System.exit(1);
-        }
-        return traceBranch;
-    }
+	/**
+	 * Creates a statement that adds a branch id (Integer) to trace.
+	 */
+	public openjava.ptree.Statement makeTraceStatement() {
+		openjava.ptree.Statement traceBranch = null;
+		try {
+			branchCounter++;
+			traceBranch = makeStatement("trace.add(new java.lang.Integer(" + branchCounter + "));");
+			printTarget(branchCounter);
+			printPath(branchCounter);
+		} catch (openjava.mop.MOPException e) {
+			System.err.println(e);
+			System.exit(1);
+		}
+		return traceBranch;
+	}
 
-    /**
-     * Initiates the visit of the parse tree from the whole method body.
-     */
-    public void insertBranchTraces(openjava.ptree.StatementList block) {
-        try {
-            block.accept(new it.itc.etoc.BranchTraceVisitor(this));
-        } catch (openjava.ptree.ParseTreeException e) {
-            System.err.println(e);
-            System.exit(1);
-        }
-    }
+	/**
+	 * Initiates the visit of the parse tree from the whole method body.
+	 */
+	public void insertBranchTraces(openjava.ptree.StatementList block) {
+		try {
+			block.accept(new it.itc.etoc.BranchTraceVisitor(this));
+		} catch (openjava.ptree.ParseTreeException e) {
+			System.err.println(e);
+			System.exit(1);
+		}
+	}
 
-    /**
-     * Prints control deps leading to a target into path file.
-     */
-    private void printPath(int tgt) {
-        pathFile.print(tgt + ":");
-        java.util.Iterator controlDep = BranchTraceVisitor.getControlDependences().iterator();
-        while (controlDep.hasNext()) {
-            java.lang.Integer br = (java.lang.Integer) controlDep.next();
-            pathFile.print(" " + br);
-        }
-        pathFile.println();
-    }
+	/**
+	 * Prints control deps leading to a target into path file.
+	 */
+	private void printPath(int tgt) {
+		pathFile.print(tgt + ":");
+		java.util.Iterator controlDep = BranchTraceVisitor.getControlDependences().iterator();
+		while (controlDep.hasNext()) {
+			java.lang.Integer br = (java.lang.Integer) controlDep.next();
+			pathFile.print(" " + br);
+		}
+		pathFile.println();
+	}
 
-    /**
-     * Prints a single target into target file.
-     */
-    private void printTarget(int tgt) {
-        if (isFirstTarget) {
-            targetFile.print(": " + tgt);
-            isFirstTarget = false;
-        } else {
-            targetFile.print(", " + tgt);
-        }
-    }
+	/**
+	 * Prints a single target into target file.
+	 */
+	private void printTarget(int tgt) {
+		if (isFirstTarget) {
+			targetFile.print(": " + tgt);
+			isFirstTarget = false;
+		} else {
+			targetFile.print(", " + tgt);
+		}
+	}
 
-    /**
-     * Prints full method name into target file.
-     */
-    private void printTargetMethod(openjava.mop.OJMember mem) {
-        isFirstTarget = true;
-        targetFile.print(getSignature(mem));
-    }
+	/**
+	 * Prints full method name into target file.
+	 */
+	private void printTargetMethod(openjava.mop.OJMember mem) {
+		isFirstTarget = true;
+		targetFile.print(getSignature(mem));
+	}
 
-    /**
-     * Terminates printing targets for given method.
-     */
-    private void printTargetEnd() {
-        targetFile.println();
-    }
+	/**
+	 * Terminates printing targets for given method.
+	 */
+	private void printTargetEnd() {
+		targetFile.println();
+	}
 
-    /**
-     * Returns the full name of method or constructor.
-     */
-    private java.lang.String getSignature(openjava.mop.OJMember mem) {
-        java.lang.String clName = mem.getDeclaringClass().toString();
-        java.lang.String signature = clName;
-        signature += "." + mem.signature().toString();
-        signature = signature.replaceAll("\\$", "\\\\\\$");
-        clName = clName.replaceAll("\\$", "\\\\\\$");
-        signature = signature.replaceFirst("\\.constructor\\s+", "." + clName);
-        signature = signature.replaceFirst("\\.method\\s+", ".");
-        signature = signature.replaceAll("class\\s+", "");
-        signature = signature.replaceAll("\\\\\\$", "\\$");
-        return signature;
-    }
+	/**
+	 * Returns the full name of method or constructor.
+	 */
+	private java.lang.String getSignature(openjava.mop.OJMember mem) {
+		java.lang.String clName = mem.getDeclaringClass().toString();
+		java.lang.String signature = clName;
+		signature += "." + mem.signature().toString();
+		signature = signature.replaceAll("\\$", "\\\\\\$");
+		clName = clName.replaceAll("\\$", "\\\\\\$");
+		signature = signature.replaceFirst("\\.constructor\\s+", "." + clName);
+		signature = signature.replaceFirst("\\.method\\s+", ".");
+		signature = signature.replaceAll("class\\s+", "");
+		signature = signature.replaceAll("\\\\\\$", "\\$");
+		return signature;
+	}
 
-    /**
-     * Prints full method/constructor name into signature file.
-     */
-    private void printSignature(openjava.mop.OJMember mem) {
-        if (mem.getModifiers().isPrivate() || mem.getModifiers().isProtected()) {
-            return;
-        }
-        signatureFile.println(getSignature(mem));
-    }
+	/**
+	 * Prints full method/constructor name into signature file.
+	 */
+	private void printSignature(openjava.mop.OJMember mem) {
+		if (mem.getModifiers().isPrivate() || mem.getModifiers().isProtected()) {
+			return;
+		}
+		signatureFile.println(getSignature(mem));
+	}
 
-    /**
-     * Opens sigature, target and path files for output.
-     */
-    private void openOutputFiles() {
-        try {
-            signatureFile = new java.io.PrintStream(new java.io.FileOutputStream("src\\" + className + ".sign"));
-            targetFile = new java.io.PrintStream(new java.io.FileOutputStream("src\\" + className + ".tgt"));
-            pathFile = new java.io.PrintStream(new java.io.FileOutputStream("src\\" + className + ".path"));
-        } catch (java.io.FileNotFoundException e) {
-            System.err.println("File not found: " + e);
-            System.exit(1);
-        }
-    }
+	/**
+	 * Opens sigature, target and path files for output.
+	 */
+	private void openOutputFiles() {
+		try {
+			signatureFile = new java.io.PrintStream(new java.io.FileOutputStream("src\\" + className + ".sign"));
+			targetFile = new java.io.PrintStream(new java.io.FileOutputStream("src\\" + className + ".tgt"));
+			pathFile = new java.io.PrintStream(new java.io.FileOutputStream("src\\" + className + ".path"));
+		} catch (java.io.FileNotFoundException e) {
+			System.err.println("File not found: " + e);
+			System.exit(1);
+		}
+	}
 
-    /**
-     * Overrides translation of a class to add instrumentation.
-     */
-    public void translateDefinition() throws openjava.mop.MOPException {
-        if (className == null) {
-            className = getSimpleName();
-        }
-        openOutputFiles();
-        insertTraceField();
-        openjava.mop.OJConstructor[] constructors = getDeclaredConstructors();
-        for (int i = 0; i < constructors.length; ++i) {
-            printSignature(constructors[i]);
-            printTargetMethod(constructors[i]);
-            insertBranchTraces(constructors[i].getBody());
-            printTargetEnd();
-        }
-        openjava.mop.OJMethod[] methods = getDeclaredMethods();
-        for (int i = 0; i < methods.length; ++i) {
-            printSignature(methods[i]);
-            printTargetMethod(methods[i]);
-            insertBranchTraces(methods[i].getBody());
-            printTargetEnd();
-        }
-        insertTraceCreator();
-        insertTraceAccessor();
-    }
+	/**
+	 * Overrides translation of a class to add instrumentation.
+	 */
+	public void translateDefinition() throws openjava.mop.MOPException {
+		if (className == null) {
+			className = getSimpleName();
+		}
+		openOutputFiles();
+		insertTraceField();
+		// head
 
-    public static java.util.Set computeUncovered(java.lang.String tgtFile, java.util.Set covered) {
-        java.util.Set uncovered = new java.util.HashSet();
-        java.util.Set toCover = new java.util.HashSet();
-        try {
-            java.lang.String s;
-            java.io.BufferedReader in = new java.io.BufferedReader(new java.io.FileReader(tgtFile));
-            while ((s = in.readLine()) != null) {
-                s = s.substring(s.indexOf(":") + 1);
-                s = s.replaceAll("\\s+", "");
-                java.lang.String[] targets = s.split(",");
-                for (int i = 0; i < targets.length; i++) {
-                    toCover.add(new java.lang.Integer(Integer.parseInt(targets[i])));
-                }
-            }
-            in.close();
-        } catch (java.io.IOException e) {
-            System.err.println("IO error: " + tgtFile);
-            System.exit(1);
-        }
-        java.util.Iterator i = toCover.iterator();
-        while (i.hasNext()) {
-            java.lang.Integer target = (java.lang.Integer) i.next();
-            if (!covered.contains(target)) {
-                uncovered.add(target);
-            }
-        }
-        return uncovered;
-    }
+		try {
+			signatureFile.println("java.lang.Integer.Integer(int)");
+			openjava.mop.OJField[] fields = getAllFields();
+			for (int k = 0; k < fields.length; k++) {
+				String classNameOfField = fields[k].getType().toString();
+				classNameOfField = classNameOfField.split(" ")[1];
 
-    public BranchInstrumentor(openjava.mop.Environment oj_param0, openjava.mop.OJClass oj_param1,
-            openjava.ptree.ClassDeclaration oj_param2) {
-        super(oj_param0, oj_param1, oj_param2);
-    }
+				if (classNameOfField.indexOf(".") == -1) {
+					Class aClass = Class.forName(classNameOfField);
+					Constructor fieldConstructor = aClass.getDeclaredConstructors()[0];
+					signatureFile.println(classNameOfField + "." + fieldConstructor.toString().split(" ")[1]);
+//					Parameter[] parameter = fieldConstructor.getParameters();
+//					for (Parameter parameter2 : parameter) {
+//						System.out.println("              " + parameter2.toString());
+//					}
+				}
+			}
 
-    public BranchInstrumentor(java.lang.Class oj_param0, openjava.mop.MetaInfo oj_param1) {
-        super(oj_param0, oj_param1);
-    }
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		openjava.mop.OJConstructor[] constructors = getDeclaredConstructors();
+		for (int i = 0; i < constructors.length; ++i) {
+			printSignature(constructors[i]);
+			printTargetMethod(constructors[i]);
+			insertBranchTraces(constructors[i].getBody());
+			printTargetEnd();
+		}
+		openjava.mop.OJMethod[] methods = getDeclaredMethods();
+		for (int i = 0; i < methods.length; ++i) {
+			printSignature(methods[i]);
+			printTargetMethod(methods[i]);
+			insertBranchTraces(methods[i].getBody());
+			printTargetEnd();
+		}
+		signatureFile.println("#\njava.lang.Integer as java.lang.Comparable");
+//		signatureFile.println("java.lang.String as java.lang.Comparable");
+		insertTraceCreator();
+		insertTraceAccessor();
+
+	}
+
+	public static java.util.Set computeUncovered(java.lang.String tgtFile, java.util.Set covered) {
+		java.util.Set uncovered = new java.util.HashSet();
+		java.util.Set toCover = new java.util.HashSet();
+		try {
+			java.lang.String s;
+			java.io.BufferedReader in = new java.io.BufferedReader(new java.io.FileReader(tgtFile));
+			while ((s = in.readLine()) != null) {
+				s = s.substring(s.indexOf(":") + 1);
+				s = s.replaceAll("\\s+", "");
+				java.lang.String[] targets = s.split(",");
+				for (int i = 0; i < targets.length; i++) {
+					toCover.add(new java.lang.Integer(Integer.parseInt(targets[i])));
+				}
+			}
+			in.close();
+		} catch (java.io.IOException e) {
+			System.err.println("IO error: " + tgtFile);
+			System.exit(1);
+		}
+		java.util.Iterator i = toCover.iterator();
+		while (i.hasNext()) {
+			java.lang.Integer target = (java.lang.Integer) i.next();
+			if (!covered.contains(target)) {
+				uncovered.add(target);
+			}
+		}
+		return uncovered;
+	}
+
+	public BranchInstrumentor(openjava.mop.Environment oj_param0, openjava.mop.OJClass oj_param1,
+			openjava.ptree.ClassDeclaration oj_param2) {
+		super(oj_param0, oj_param1, oj_param2);
+	}
+
+	public BranchInstrumentor(java.lang.Class oj_param0, openjava.mop.MetaInfo oj_param1) {
+		super(oj_param0, oj_param1);
+	}
 
 }

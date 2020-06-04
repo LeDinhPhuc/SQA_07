@@ -301,11 +301,10 @@ class TestGenerator {
 	 * Displays execution info at run time.
 	 */
 	public void displayInfo(long t, int cov) {
-		// for (int i = 0; i < displayedInfo.length(); i++)
-		// System.out.print("\b");
+//		 for (int i = 0; i < displayedInfo.length(); i++)
+//		 System.out.print("\b");
 		System.out.flush();
 		displayedInfo = "Time: " + t + " s, targets to cover: " + cov + "      ";
-		// Xóa
 		System.out.println(displayedInfo + "\n");
 		System.out.flush();
 	}
@@ -341,7 +340,7 @@ class TestGenerator {
 		int attempts = 0;
 
 		displayInfo(time, targetsToCover.size());
-		System.out.println(targetsToCover.size());
+
 		while (targetsToCover.size() > 0 && time < maxTime) {
 
 			// iterator để duyệt phần tử trong list cho dạng con trỏ
@@ -515,10 +514,11 @@ class TestGenerator {
 	}
 
 	public static void main(String args[]) throws Exception {
+		String classNameString = "BinaryTree";
 		String relativePathString = "src/";
-		args = new String[] { relativePathString + "BinaryTree.oj", relativePathString + "BinaryTree.sign",
-				relativePathString + "BinaryTree.tgt", relativePathString + "BinaryTree.path",
-				relativePathString + "params.txt", relativePathString + "BinaryTree.junit" };
+		args = new String[] { relativePathString + classNameString + ".oj", relativePathString + classNameString + ".sign",
+				relativePathString + classNameString + ".tgt", relativePathString + classNameString + ".path",
+				relativePathString + "params.txt", relativePathString + classNameString + ".junit" };
 
 		String[] srcfiles = { args[0] };
 		String signFile = args[1];
@@ -526,8 +526,8 @@ class TestGenerator {
 		pathsFile = args[3];
 		paramsFile = args[4];
 		junitFile = args[5];
-//		 openjava.ojc.Main.main(srcfiles);
-//		 Thread.sleep(15000);
+		openjava.ojc.Main.main(srcfiles);
+		Thread.sleep(5000);
 		TestGenerator tg = new DataFlowTestGenerator();
 
 		tg.generateTestCases(signFile);

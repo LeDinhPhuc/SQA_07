@@ -747,16 +747,21 @@ public class ChromosomeFormer {
 
           if (paramNames.length == 1 && paramNames[0].equals(""))
             paramNames = new String[0];
+
           List params = new LinkedList();
 
+          // params cuar constructor
           for (int i = 0; i < paramNames.length; i++) {
             params.add(paramNames[i]);
             String usedClass = paramNames[i];
             if (paramNames[i].indexOf("[") != -1)
               usedClass = paramNames[i].substring(0, paramNames[i].indexOf("["));
-            if (!isPrimitiveType(paramNames[i]))
+            if (!isPrimitiveType(paramNames[i])) {
               usedClassNames.add(usedClass);
+            }
+
           }
+
           String simpleClassName = className.substring(className.lastIndexOf(".") + 1);
           if (simpleClassName.equals(methodName)) {
             MethodSignature methodSign = new MethodSignature(className, params);
@@ -771,10 +776,11 @@ public class ChromosomeFormer {
       }
 
       String r1 = r.substring(0, r.indexOf("("));
-      String classUnderTest = r1.substring(0, r1.lastIndexOf("."));
+      String classUnderTest = r1.substring(0, r1.lastIndexOf(".")); // => BinaryTree
       setClassUnderTest(classUnderTest);
 
       // Binary tail
+
       while ((s = in.readLine()) != null) {
         if (s.length() > 0) {
           String className = s.substring(0, s.indexOf(" as ")).trim();
@@ -783,6 +789,7 @@ public class ChromosomeFormer {
         }
       }
       in.close();
+      // Kiem tra constructor
       checkConstructorsAvailable(usedClassNames);
     } catch (IOException e) {
       System.err.println("IO error: " + fileName);
