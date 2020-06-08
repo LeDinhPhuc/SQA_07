@@ -783,8 +783,10 @@ public class ChromosomeFormer {
 
       while ((s = in.readLine()) != null) {
         if (s.length() > 0) {
-          String className = s.substring(0, s.indexOf(" as ")).trim();
+          // Comparable
           String typeName = s.substring(s.indexOf(" as ") + 4).trim();
+          // java.lang.Integer
+          String className = s.substring(0, s.indexOf(" as ")).trim();
           addConcreteType(typeName, className);
         }
       }

@@ -30,7 +30,7 @@ class Population {
 	/**
 	 * An individual is an object of class Chromosome.
 	 *
-	 * List<Chromosome>
+	 * List<Chromosome> 1 quần thể
 	 */
 	List individuals;
 
@@ -136,10 +136,12 @@ class Population {
 	public void computeDataFlowFitness(DataFlowTarget tgt, Set path1, Set path2) {
 		overallFitness = 0;
 		Iterator i = individuals.iterator();
+
 		while (i.hasNext()) {
 			Chromosome id = (Chromosome) i.next();
 			overallFitness += id.computeDataFlowFitness(tgt, path1, path2);
 		}
+		// Tính xong giá trị hàm fitness thì sort lại quần thể
 		Collections.sort(individuals);
 	}
 
@@ -157,6 +159,7 @@ class Population {
 			exec.execute(classUnderTest, id.toString());
 			Collection trace = exec.getExecutionTrace(classUnderTest);
 			// if (TestGenerator.dataFlowCoverage)
+			// Sau khi tạo ra NST sẽ trace và sinh ra paths sử dụng để đánh giá hàm fitnesss
 			id.setCoveredDataFlows((List) trace);
 		}
 	}

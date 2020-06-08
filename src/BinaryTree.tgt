@@ -1,10 +1,12 @@
 BinaryTree.BinaryTree(): 1
-BinaryTree.insert(BinaryTreeNode): 2, 3, 4
-BinaryTree.search(java.lang.Comparable): 5, 6, 7, 8, 9
+BinaryTree.insert(BinaryTreeNode): 2, 3, 4, 5, 6
+BinaryTree.search(java.lang.Comparable): 7, 8, 9, 10, 11
 
-(3, 4, BinaryTree.root)
+(3, 6, BinaryTree.root)
+(3, 7, BinaryTree.root)
 (3, 2, BinaryTree.root)
-(3, 5, BinaryTree.root)
-(1, 4, BinaryTree.root)
+(1, 6, BinaryTree.root)
+(1, 7, BinaryTree.root)
 (1, 2, BinaryTree.root)
-(1, 5, BinaryTree.root)
+(1, 3, BinaryTree.a)
+(4, 3, BinaryTree.a)

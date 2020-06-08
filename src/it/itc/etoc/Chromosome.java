@@ -146,13 +146,7 @@ public class Chromosome implements Comparable, Cloneable {
 	 * this data to each Chromosome.
 	 */
 	public Set getCoveredTargets() {
-		// Xóa
-		// if (TestGenerator.dataFlowCoverage)
-		// System.out.println(coveredDataFlowTargets + "
-		// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<=");
 		return coveredDataFlowTargets;
-		// else
-		// return (Set) coveredBranchTargets;
 	}
 
 	/**
@@ -219,18 +213,27 @@ public class Chromosome implements Comparable, Cloneable {
 			if (coveredBranches.contains(x))
 				fitness++;
 		}
-		BranchTarget source = tgt.getSourceBranch();
+		// System.out.println("tgt :" + tgt.toString());
+		// System.out.println("path1 :" + path1.toString());
+		// System.out.println("path2 :" + path2.toString());
+		// System.out.println("coveredBranchTargets :" +
+		// coveredBranchTargets.toString());
+		BranchTarget source = tgt.getSourceBranch(); // 1
 		boolean inDefClearPath = false;
 		i = coveredBranchTargets.iterator();
 		while (i.hasNext()) {
 			BranchTarget x = (BranchTarget) i.next();
 			if (DataFlowTestGenerator.isDef(x, tgt.getVariable()))
 				inDefClearPath = false;
+			// trừ node nguồn ra, nếu các node khác định nghĩa lại biến này thì đây ko phải
+			// là defClear path
 			if (source.equals(x))
 				inDefClearPath = true;
-			if (inDefClearPath && path2.contains(x))
+			if (inDefClearPath && path2.contains(x)) {
 				fitness++;
+			}
 		}
+		// System.out.println("fitness :" + fitness + "\n");
 		return fitness;
 	}
 

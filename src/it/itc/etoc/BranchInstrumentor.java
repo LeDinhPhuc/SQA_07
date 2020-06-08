@@ -11,11 +11,13 @@
  */
 package it.itc.etoc;
 
+import java.util.List;
 import openjava.mop.*;
 import openjava.ptree.*;
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
 import java.util.*;
 
 import it.itc.etoc.BranchTraceVisitor;
@@ -89,9 +91,8 @@ public class BranchInstrumentor extends openjava.mop.OJClass {
 			openjava.mop.OJModifier mod = OJModifier.forModifier(OJModifier.STATIC);
 			openjava.ptree.FieldDeclaration fd = new openjava.ptree.FieldDeclaration(
 					new openjava.ptree.ModifierList(ModifierList.STATIC),
-					TypeName.forOJClass(OJClass.forName(traceInterfaceType)), "trace",
-					new openjava.ptree.AllocationExpression(OJClass.forName(traceConcreteType),
-							new openjava.ptree.ExpressionList()));
+					TypeName.forOJClass(OJClass.forName(traceInterfaceType)), "trace", new openjava.ptree.AllocationExpression(
+							OJClass.forName(traceConcreteType), new openjava.ptree.ExpressionList()));
 			openjava.mop.OJField f = new openjava.mop.OJField(getEnvironment(), this, fd);
 			addField(f);
 		} catch (openjava.mop.OJClassNotFoundException e) {
@@ -111,8 +112,8 @@ public class BranchInstrumentor extends openjava.mop.OJClass {
 			openjava.ptree.StatementList body = makeStatementList("return trace;");
 			openjava.mop.OJModifier mod = OJModifier.forModifier(OJModifier.PUBLIC);
 			mod = mod.add(OJModifier.STATIC);
-			openjava.mop.OJMethod m = new openjava.mop.OJMethod(this, mod, OJClass.forName(traceInterfaceType),
-					"getTrace", new openjava.mop.OJClass[0], new openjava.mop.OJClass[0], body);
+			openjava.mop.OJMethod m = new openjava.mop.OJMethod(this, mod, OJClass.forName(traceInterfaceType), "getTrace",
+					new openjava.mop.OJClass[0], new openjava.mop.OJClass[0], body);
 			addMethod(m);
 		} catch (openjava.mop.OJClassNotFoundException e) {
 			System.err.println(e);
@@ -182,6 +183,7 @@ public class BranchInstrumentor extends openjava.mop.OJClass {
 	 * Prints control deps leading to a target into path file.
 	 */
 	private void printPath(int tgt) {
+		// Print target and deps
 		pathFile.print(tgt + ":");
 		java.util.Iterator controlDep = BranchTraceVisitor.getControlDependences().iterator();
 		while (controlDep.hasNext()) {
@@ -267,23 +269,29 @@ public class BranchInstrumentor extends openjava.mop.OJClass {
 		}
 		openOutputFiles();
 		insertTraceField();
-		// head
+		List<String> tail = new ArrayList<String>();
 
 		try {
 			signatureFile.println("java.lang.Integer.Integer(int)");
+			signatureFile.println("java.lang.String.String(String)\n");
 			openjava.mop.OJField[] fields = getAllFields();
 			for (int k = 0; k < fields.length; k++) {
-				String classNameOfField = fields[k].getType().toString();
-				classNameOfField = classNameOfField.split(" ")[1];
+				String classString = fields[k].getType().toString().split(" ")[1];
+				if(ChromosomeFormer.isPrimitiveType(classString.substring(classString.lastIndexOf(".") + 1 ).toLowerCase())) {
+					continue;
+				}
 
-				if (classNameOfField.indexOf(".") == -1) {
-					Class aClass = Class.forName(classNameOfField);
+				if (classString.indexOf(".") == -1) {
+					Class aClass = Class.forName(classString);
 					Constructor fieldConstructor = aClass.getDeclaredConstructors()[0];
-					signatureFile.println(classNameOfField + "." + fieldConstructor.toString().split(" ")[1]);
-//					Parameter[] parameter = fieldConstructor.getParameters();
-//					for (Parameter parameter2 : parameter) {
-//						System.out.println("              " + parameter2.toString());
-//					}
+					signatureFile.println(classString + "." + fieldConstructor.toString().split(" ")[1]);
+					Parameter[] parameter = fieldConstructor.getParameters();
+					for (Parameter pr : parameter) {
+						Type classTypeString = pr.getType();
+						String typeString = classTypeString.getTypeName();
+						if (classTypeString.toString().contains("interface") || classTypeString.toString().contains("abstract"))
+							tail.add(typeString);
+					}
 				}
 			}
 
@@ -305,8 +313,10 @@ public class BranchInstrumentor extends openjava.mop.OJClass {
 			insertBranchTraces(methods[i].getBody());
 			printTargetEnd();
 		}
-		signatureFile.println("#\njava.lang.Integer as java.lang.Comparable");
-//		signatureFile.println("java.lang.String as java.lang.Comparable");
+		signatureFile.println("\n#");
+		for (String tailIndex : tail) {
+			signatureFile.println("java.lang.Integer as " + tailIndex);
+		}
 		insertTraceCreator();
 		insertTraceAccessor();
 

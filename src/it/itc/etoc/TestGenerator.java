@@ -202,9 +202,6 @@ class TestGenerator {
 				}
 				targets.add(tgt);
 			}
-
-			System.out.println(targets.size());
-
 		} catch (NumberFormatException e) {
 			System.err.println("Wrong format file: " + targetFile);
 			System.exit(1);
@@ -232,6 +229,7 @@ class TestGenerator {
 			while ((s = in.readLine()) != null) {
 				String r = s.substring(0, s.indexOf(":"));
 				int tgt = Integer.parseInt(r);
+				// danh sách node cha của nó
 				r = s.substring(s.indexOf(":") + 1);
 				StringTokenizer tok = new StringTokenizer(r);
 				Set pathPoints = new HashSet();
@@ -239,6 +237,7 @@ class TestGenerator {
 					int n = Integer.parseInt(tok.nextToken());
 					pathPoints.add(new BranchTarget(n));
 				}
+				// hash map từ một nhánh target đến các nhánh cha của nó
 				paths.put(new BranchTarget(tgt), pathPoints);
 			}
 		} catch (NumberFormatException e) {
@@ -301,11 +300,11 @@ class TestGenerator {
 	 * Displays execution info at run time.
 	 */
 	public void displayInfo(long t, int cov) {
-//		 for (int i = 0; i < displayedInfo.length(); i++)
-//		 System.out.print("\b");
+		// for (int i = 0; i < displayedInfo.length(); i++)
+		// System.out.print("\b");
 		System.out.flush();
 		displayedInfo = "Time: " + t + " s, targets to cover: " + cov + "      ";
-		System.out.println(displayedInfo + "\n");
+		System.out.println(displayedInfo);
 		System.out.flush();
 	}
 
@@ -319,11 +318,12 @@ class TestGenerator {
 	// }
 
 	/**
-	 * Fitness for data flow coverage.
+	 * compute Fitness for data flow coverage.
 	 */
 	public void computeDataFlowFitness(Population pop, DataFlowTarget tgt) {
 		Set tgtPathPoints1 = (Set) paths.get(tgt.getSourceBranch());
 		Set tgtPathPoints2 = (Set) paths.get(tgt.getDestinationBranch());
+
 		pop.computeDataFlowFitness((DataFlowTarget) tgt, tgtPathPoints1, tgtPathPoints2);
 	}
 
@@ -342,7 +342,6 @@ class TestGenerator {
 		displayInfo(time, targetsToCover.size());
 
 		while (targetsToCover.size() > 0 && time < maxTime) {
-
 			// iterator để duyệt phần tử trong list cho dạng con trỏ
 			Iterator i = targets.iterator();
 			while (i.hasNext()) {
@@ -353,7 +352,7 @@ class TestGenerator {
 				while (j.hasNext()) {
 					// target trong file sign
 					Target tgt = (Target) j.next();
-
+					// nếu tập quần thể hiện tại đã bao phủ tgt rồi thì bỏ qua code sau
 					if (curPopulation.covers(tgt))
 						continue;
 					// Số lần chạy tối đa
@@ -369,8 +368,6 @@ class TestGenerator {
 						// nếu chưa thì sẽ đánh giá hàm fitness
 						// if (dataFlowCoverage)
 						computeDataFlowFitness(curPopulation, (DataFlowTarget) tgt);
-						// else
-						// computeBranchFitness(curPopulation, (BranchTarget) tgt);
 						// tái tạo lại tập quần thể
 						curPopulation = curPopulation.generateNewPopulation();
 						attempts++;
@@ -381,9 +378,9 @@ class TestGenerator {
 			targetsToCover = computeNotYetCoveredTargets();
 			time = System.currentTimeMillis() / 1000 - startTime;
 			displayInfo(time, targetsToCover.size());
+			System.out.println("targetsToCover " + targetsToCover.toString());
 		}
 		System.out.println("\n");
-		System.out.println();
 	}
 
 	/**
@@ -514,7 +511,7 @@ class TestGenerator {
 	}
 
 	public static void main(String args[]) throws Exception {
-		String classNameString = "BinaryTree";
+		String classNameString = "Triangle";
 		String relativePathString = "src/";
 		args = new String[] { relativePathString + classNameString + ".oj", relativePathString + classNameString + ".sign",
 				relativePathString + classNameString + ".tgt", relativePathString + classNameString + ".path",

@@ -9,10 +9,13 @@ public class BinaryTree
 
     private BinaryTreeNode root;
 
+    java.lang.String a;
+
     public BinaryTree()
     {
         trace.add( new java.lang.Integer( 1 ) );
         root = null;
+        a = "";
     }
 
     public void insert( BinaryTreeNode z )
@@ -21,27 +24,33 @@ public class BinaryTree
         if (root == null) {
             trace.add( new java.lang.Integer( 3 ) );
             root = z;
+            if (a == "a") {
+                trace.add( new java.lang.Integer( 4 ) );
+                a = "b";
+            } else {
+                trace.add( new java.lang.Integer( 5 ) );
+            }
         } else {
-            trace.add( new java.lang.Integer( 4 ) );
+            trace.add( new java.lang.Integer( 6 ) );
             root.insert( z );
         }
     }
 
     public boolean search( java.lang.Comparable x )
     {
-        trace.add( new java.lang.Integer( 5 ) );
+        trace.add( new java.lang.Integer( 7 ) );
         if (root == null) {
-            trace.add( new java.lang.Integer( 6 ) );
+            trace.add( new java.lang.Integer( 8 ) );
             return false;
         } else {
-            trace.add( new java.lang.Integer( 7 ) );
+            trace.add( new java.lang.Integer( 9 ) );
         }
         BinaryTreeNode n = root.search( x );
         if (n != null) {
-            trace.add( new java.lang.Integer( 8 ) );
+            trace.add( new java.lang.Integer( 10 ) );
             return true;
         } else {
-            trace.add( new java.lang.Integer( 9 ) );
+            trace.add( new java.lang.Integer( 11 ) );
         }
         return false;
     }

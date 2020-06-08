@@ -1,14 +1,20 @@
 import it.itc.etoc.*;
 public class BinaryTree instantiates DataFlowInstrumentor {
   private BinaryTreeNode root;
-
+  String a;
   public BinaryTree() {
     root = null;
+    a = "";
   }
    
   public void insert(BinaryTreeNode z) {
-    if (root == null)
+    
+    if (root == null){
       root = z;
+      if(a == "a"){
+      	a = "b";
+      }
+    }
     else
       root.insert(z);
   }
