@@ -1,6 +1,5 @@
-import it.itc.etoc.*;
-
-public class BinaryTree instantiates DataFlowInstrumentor {
+package examples.BinaryTree;
+public class BinaryTree {
 	private BinaryTreeNode root;
 	String test = null;
 
