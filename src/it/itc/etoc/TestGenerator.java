@@ -511,7 +511,7 @@ class TestGenerator {
 	}
 
 	public static void main(String args[]) throws Exception {
-		String classNameString = "Triangle";
+		String classNameString = "BinaryTree";
 		String relativePathString = "src/";
 		args = new String[] { relativePathString + classNameString + ".oj", relativePathString + classNameString + ".sign",
 				relativePathString + classNameString + ".tgt", relativePathString + classNameString + ".path",

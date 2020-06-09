@@ -8,5 +8,5 @@ BinaryTree.search(java.lang.Comparable): 7, 8, 9, 10, 11
 (1, 6, BinaryTree.root)
 (1, 7, BinaryTree.root)
 (1, 2, BinaryTree.root)
-(1, 3, BinaryTree.a)
-(4, 3, BinaryTree.a)
+(4, 3, BinaryTree.test)
+(1, 3, BinaryTree.test)

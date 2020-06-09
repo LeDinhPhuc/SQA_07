@@ -9,13 +9,13 @@ public class BinaryTree
 
     private BinaryTreeNode root;
 
-    java.lang.String a;
+    java.lang.String test = null;
 
     public BinaryTree()
     {
         trace.add( new java.lang.Integer( 1 ) );
         root = null;
-        a = "";
+        test = null;
     }
 
     public void insert( BinaryTreeNode z )
@@ -24,9 +24,9 @@ public class BinaryTree
         if (root == null) {
             trace.add( new java.lang.Integer( 3 ) );
             root = z;
-            if (a == "a") {
+            if (test == null) {
                 trace.add( new java.lang.Integer( 4 ) );
-                a = "b";
+                test = "Hello world";
             } else {
                 trace.add( new java.lang.Integer( 5 ) );
             }

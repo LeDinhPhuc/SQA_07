@@ -1,7 +1,0 @@
-public interface
-{
-    public Object operateAdd(Object right);
-    public Object operateSubtract(Object right);
-    public Object operateMultiply(Object right);
-    public Object operateDivide(Object right);
-}

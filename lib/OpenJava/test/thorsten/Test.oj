@@ -1,6 +1,0 @@
-package thorsten;
-
-public class Test instantiates MetaTest {
-	public static void main(String[] args) {
-	}
-}

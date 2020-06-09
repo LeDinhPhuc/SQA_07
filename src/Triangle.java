@@ -14,7 +14,7 @@ public class Triangle
         trace.add( new java.lang.Integer( 1 ) );
     }
 
-    public static java.lang.String checkTriangle( int side1, int side2, int side3 )
+    public java.lang.String checkTriangle( int side1, int side2, int side3 )
     {
         trace.add( new java.lang.Integer( 2 ) );
         java.lang.String type = "";
