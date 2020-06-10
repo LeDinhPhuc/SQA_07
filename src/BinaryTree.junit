@@ -2,24 +2,23 @@ import junit.framework.*;
 
 public class BinaryTree extends TestCase {
   public void testCase1() {
-    BinaryTree x58 = new BinaryTree();
-    java.lang.Integer x69 = new java.lang.Integer(46);
-    BinaryTreeNode x68 = new BinaryTreeNode(x69);
-    x58.insert(x68);
-    java.lang.Integer x70 = new java.lang.Integer(77);
-    x58.search(x70);
-    java.lang.Integer x60 = new java.lang.Integer(81);
-    BinaryTreeNode x59 = new BinaryTreeNode(x60);
-    x58.insert(x59);
-    java.lang.Integer x62 = new java.lang.Integer(79);
-    BinaryTreeNode x61 = new BinaryTreeNode(x62);
-    x58.insert(x61);
+    BinaryTree x55 = new BinaryTree();
+    java.lang.Integer x57 = new java.lang.Integer(26);
+    BinaryTreeNode x56 = new BinaryTreeNode(x57);
+    x55.insert(x56);
+    java.lang.Integer x59 = new java.lang.Integer(68);
+    BinaryTreeNode x58 = new BinaryTreeNode(x59);
+    x55.insert(x58);
+    java.lang.Integer x60 = new java.lang.Integer(84);
+    x55.search(x60);
   }
 
   public void testCase2() {
-    BinaryTree x3 = new BinaryTree();
-    java.lang.Integer x4 = new java.lang.Integer(89);
-    x3.search(x4);
+    BinaryTree x97 = new BinaryTree();
+    java.lang.Integer x98 = new java.lang.Integer(16);
+    x97.search(x98);
+    java.lang.Integer x99 = new java.lang.Integer(31);
+    x97.search(x99);
   }
 
   public static void main (String[] args) {

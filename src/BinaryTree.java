@@ -9,18 +9,16 @@ public class BinaryTree
 
     private BinaryTreeNode root;
 
-    java.lang.String test = null;
-
     public BinaryTree()
     {
         trace.add( new java.lang.Integer( 1 ) );
         root = null;
-        test = null;
     }
 
     public void insert( BinaryTreeNode z )
     {
         trace.add( new java.lang.Integer( 2 ) );
+        java.lang.String test = null;
         if (root == null) {
             trace.add( new java.lang.Integer( 3 ) );
             root = z;

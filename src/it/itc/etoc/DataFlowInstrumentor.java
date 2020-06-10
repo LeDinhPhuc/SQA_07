@@ -106,5 +106,23 @@ public class DataFlowInstrumentor extends it.itc.etoc.BranchInstrumentor {
 	public DataFlowInstrumentor(java.lang.Class oj_param0, openjava.mop.MetaInfo oj_param1) {
 		super(oj_param0, oj_param1);
 	}
+	
+	public void print() {
+		java.util.Iterator d = def.iterator();
+		while (d.hasNext()) {
+			it.itc.etoc.DataFlowPair dp = (it.itc.etoc.DataFlowPair) d.next();
+			int defBranch = dp.branch;
+			java.lang.String defVar = dp.var;
+			java.util.Iterator u = use.iterator();
+			while (u.hasNext()) {
+				it.itc.etoc.DataFlowPair up = (it.itc.etoc.DataFlowPair) u.next();
+				int useBranch = up.branch;
+				java.lang.String useVar = up.var;
+				if (defVar.equals(useVar)) {
+					System.out.println("(" + defBranch + ", " + useBranch + ", " + getClassName() + "." + defVar + ")");
+				}
+			}
+		}
+	}
 
 }
