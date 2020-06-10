@@ -1,0 +1,7 @@
+import junit.framework.*;
+
+public class Hello extends TestCase {
+  public static void main (String[] args) {
+    junit.textui.TestRunner.run(Hello.class);
+  }
+}

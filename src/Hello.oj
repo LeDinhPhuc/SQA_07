@@ -1,0 +1,23 @@
+import it.itc.etoc.*;
+
+public class Hello instantiates DataFlowInstrumentor {
+	    private int a;
+
+    public Hello( int b )
+    {
+        a = b;
+        b = a;
+    }
+
+    public void changeValue( java.lang.String string, int b )
+    {
+        if (a > 4) {
+            if (string == null) {
+                string = "test";
+            }
+            a = b;
+            return;
+        }
+        System.out.println( string );
+    }
+}
