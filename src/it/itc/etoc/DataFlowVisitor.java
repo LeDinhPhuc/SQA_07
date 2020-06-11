@@ -365,9 +365,8 @@ public class DataFlowVisitor extends ParseTreeVisitor {
 	}
 
 	public void visit(VariableDeclaration p) throws ParseTreeException {
-		VariableInitializer var = p.getInitializer();
-		var.accept(this);
-		instrumentor.print();
+//		VariableInitializer var = p.getInitializer();
+//		var.accept(this);
 		instrumentor.addDef(((Integer) lastBranchCounter.peek()).intValue(), p.getVariable());
 	}
 

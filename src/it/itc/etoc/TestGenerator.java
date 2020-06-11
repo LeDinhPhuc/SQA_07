@@ -13,7 +13,7 @@ import openjava.ojc.*;
 import java.util.regex.*;
 
 import javax.xml.transform.Templates;
-
+import java.util.TreeSet;
 import it.itc.etoc.BranchTarget;
 import it.itc.etoc.Chromosome;
 import it.itc.etoc.DataFlowTarget;
@@ -257,7 +257,6 @@ class TestGenerator {
 		Iterator i = targets.iterator();
 		while (i.hasNext()) {
 			Target tgt = (Target) i.next();
-			// Xóa
 			targetsToCover.addAll(tgt.getSubTargets());
 		}
 		return targetsToCover;
@@ -300,22 +299,11 @@ class TestGenerator {
 	 * Displays execution info at run time.
 	 */
 	public void displayInfo(long t, int cov) {
-		// for (int i = 0; i < displayedInfo.length(); i++)
-		// System.out.print("\b");
 		System.out.flush();
 		displayedInfo = "Time: " + t + " s, targets to cover: " + cov + "      ";
 		System.out.println(displayedInfo);
 		System.out.flush();
 	}
-
-	/**
-	 * Fitness for branch coverage.
-	 */
-	// Xóa
-	// public void computeBranchFitness(Population pop, Target tgt) {
-	// Set tgtPathPoints = (Set) paths.get(tgt);
-	// pop.computeBranchFitness(tgtPathPoints);
-	// }
 
 	/**
 	 * compute Fitness for data flow coverage.
@@ -328,7 +316,7 @@ class TestGenerator {
 	}
 
 	/**
-	 * Sinh testcase Test case generation and execution.
+	 * Test case generation and execution.
 	 */
 	public void generateTestCases(String signFile) {
 		Population.setChromosomeFormer(signFile);
@@ -374,7 +362,7 @@ class TestGenerator {
 					}
 				}
 			}
-			// Cập nhật những target ko được bao phủ
+			// Cập nhật những target chưa được bao phủ
 			targetsToCover = computeNotYetCoveredTargets();
 			time = System.currentTimeMillis() / 1000 - startTime;
 			displayInfo(time, targetsToCover.size());
