@@ -1,4 +1,4 @@
-package examples.BinaryTree;
+package examples;
 
 public class BinaryTreeNode {
 	private BinaryTreeNode left;

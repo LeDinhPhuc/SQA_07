@@ -1,4 +1,4 @@
-package examples.BinaryTree;
+package examples;
 public class BinaryTree {
 	private BinaryTreeNode root;
 	String test = null;
